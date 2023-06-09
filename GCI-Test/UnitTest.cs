@@ -1,8 +1,5 @@
 using GCI_Function_App.Business;
 using GCI_Function_App.Classes;
-using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
 namespace GCI_Test
 {
     public class Tests
@@ -16,9 +13,7 @@ namespace GCI_Test
 
 
 
-
-
-            DirectoryGroup directoryGroup1 = new DirectoryGroup { Name = "nl_admin"};
+            DirectoryGroup directoryGroup1 = new DirectoryGroup { Name = "nl_admin" };
             directoryGroup1.GroupMembers.Add(new GroupMember { Email = "user1@mail.com" });
             directoryGroup1.GroupMembers.Add(new GroupMember { Email = "user2@mail.com" });
             directoryGroup1.GroupMembers.Add(new GroupMember { Email = "user3@mail.com" });
@@ -43,7 +38,18 @@ namespace GCI_Test
             analyticsAccount1.AnalyticsUsers.Add(new AnalyticsUser { Email = "usertoremove@mail.com", DirectRoles = "predefinedRoles/admin".Split(',').ToList() });
             analyticsUsersOverview.AnalyticsAccounts.Add(analyticsAccount1);
 
-            directoryComparer = new DirectoryComparer(directoryUsersOverview, analyticsUsersOverview);
+
+            ConfigurationObject configurationObject = new ConfigurationObject();
+            configurationObject.AccountInfos.Add(new AccountInfo { AnalyticsID = "accounts/196069204", FriendlyName = "nl" });
+            configurationObject.AccountInfos.Add(new AccountInfo { AnalyticsID = "accounts/270720121", FriendlyName = "en" });
+            configurationObject.Roles.Add(new Role { FriendlyName = "viewer", Rolename = "predefinedRoles/viewer" });
+            configurationObject.Roles.Add(new Role { FriendlyName = "analyst", Rolename = "predefinedRoles/analyst" });
+            configurationObject.Roles.Add(new Role { FriendlyName = "admin", Rolename = "predefinedRoles/admin" });
+            configurationObject.Roles.Add(new Role { FriendlyName = "editor", Rolename = "predefinedRoles/editor" });
+            configurationObject.Roles.Add(new Role { FriendlyName = "Blank", Rolename = "Blank" });
+            configurationObject.Roles.Add(new Role { FriendlyName = "no-cost-data", Rolename = "predefinedRoles/no-cost-data" });
+            configurationObject.Roles.Add(new Role { FriendlyName = "no-revenue-data", Rolename = "predefinedRoles/no-revenue-data" });
+            directoryComparer = new DirectoryComparer(directoryUsersOverview, analyticsUsersOverview, configurationObject);
             upsertActions = directoryComparer.GetComparisonResult();
         }
 
@@ -61,7 +67,7 @@ namespace GCI_Test
         [Test]
         public void AddingInvalidDomainPrefixShouldResultInAErrorObject()
         {
-            Assert.That(directoryComparer.LogCollection.Count,Is.EqualTo(1));
+            Assert.That(directoryComparer.LogCollection.Count, Is.EqualTo(1));
         }
     }
 }

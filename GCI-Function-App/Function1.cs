@@ -1,24 +1,10 @@
-using System;
-using Microsoft.Azure.WebJobs;
-using Microsoft.Azure.WebJobs.Host;
-using Microsoft.Extensions.Logging;
-using Google.Apis.Admin.Directory.directory_v1;
-using Google.Apis.Auth.OAuth2;
-using Google.Apis.Services;
-using System.IO;
-using Azure.Identity;
-using Azure.Security.KeyVault.Secrets;
-using System.Threading.Tasks;
-using Google.Apis.GoogleAnalyticsAdmin.v1alpha;
-using Google.Apis.GoogleAnalyticsAdmin.v1alpha.Data;
-using System.Linq;
-using System.Collections.Generic;
-using Azure;
-using GCI_Function_App.Clients;
-using Google.Apis.Admin.Directory.directory_v1.Data;
-using GCI_Function_App.Classes;
-using Microsoft.Extensions.Azure;
 using GCI_Function_App.Business;
+using GCI_Function_App.Classes;
+using GCI_Function_App.Clients;
+using Microsoft.Azure.WebJobs;
+using Microsoft.Extensions.Logging;
+using System;
+using System.Threading.Tasks;
 
 namespace GCI_Function_App
 {
@@ -55,7 +41,7 @@ namespace GCI_Function_App
             var AccountsResponse = googleClient.GetAnalyticsAccounts();
             foreach (var account in AccountsResponse.Accounts)
             {
-                AnalyticsAccount analyticsAccount = new AnalyticsAccount {name = account.Name, DisplayName = account.DisplayName };
+                AnalyticsAccount analyticsAccount = new AnalyticsAccount { name = account.Name, DisplayName = account.DisplayName };
                 var usersResult = googleClient.GetAnalyticsUsersByAccount(account.Name);
                 foreach (var user in usersResult)
                 {
@@ -64,7 +50,7 @@ namespace GCI_Function_App
                 }
                 analyticsUsersOverview.AnalyticsAccounts.Add(analyticsAccount);
             }
-            DirectoryComparer directoryComparer = new DirectoryComparer(directoryUsersOverview, analyticsUsersOverview);
+            DirectoryComparer directoryComparer = new DirectoryComparer(directoryUsersOverview, analyticsUsersOverview, new ConfigurationObject());
         }
     }
 }

@@ -16,14 +16,16 @@ namespace GCI_Function_App.Clients
         private static GoogleAnalyticsAdminService _googleAnalyticsAdminService;
         private static DirectoryService _directoryService;
 
-        public GoogleClient(string secret, string directoryImpersonateAccount) {
+        public GoogleClient(string secret, string directoryImpersonateAccount)
+        {
             _secret = secret;
             _directoryImpersonateAccount = directoryImpersonateAccount;
             CreateGoogleAnalyticsAdminService();
             CreateDirectoryService();
         }
 
-        public Users GetDirectoryUsers (string domain){
+        public Users GetDirectoryUsers(string domain)
+        {
             var list = _directoryService.Users.List();
             list.Domain = domain;
             try
@@ -31,7 +33,8 @@ namespace GCI_Function_App.Clients
                 var users = list.Execute();
                 return users;
             }
-            catch (Exception e) { 
+            catch (Exception e)
+            {
                 return null;
             }
         }

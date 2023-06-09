@@ -1,10 +1,6 @@
 ﻿using Azure.Identity;
 using Azure.Security.KeyVault.Secrets;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace GCI_Function_App.Clients
 {
@@ -12,7 +8,8 @@ namespace GCI_Function_App.Clients
     {
         private string _keyvaultName;
 
-        public AzureClient(string keyVaultName) {
+        public AzureClient(string keyVaultName)
+        {
             _keyvaultName = keyVaultName;
         }
 
