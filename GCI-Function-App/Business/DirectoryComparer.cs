@@ -154,17 +154,45 @@ namespace GCI_Function_App.Business
             List<string> accountResult = new List<string>();
             foreach (var directoryGroup in directoryGroups)
             {
-                if (directoryGroup.Name.Contains("_"))
-                {
-                    var groupname = directoryGroup.Name.Split("_").ToList().FirstOrDefault();
-                    if (!accountResult.Contains(groupname))
+
+                    var groupName = ValidateGroupName(directoryGroup.Name);
+
+                    if (!accountResult.Contains(groupName))
                     {
-                        accountResult.Add(groupname);
+                            accountResult.Add(groupName);
                     }
-                }
             }
             return accountResult;
         }
+
+        private string ValidateGroupName(string groupName) {
+            string validatedResult=string.Empty;
+            if (!groupName.Contains("_") ) {
+                LogCollection.Add(new logItem { type = "error", message = $"Groupname should contain a underscore, groupname: {groupName}" });
+                return validatedResult;
+            }
+            var splittedResult = groupName.Split('_').ToList();
+            if (splittedResult.Count() != 2)
+            {
+                LogCollection.Add(new logItem { type = "error", message = $"Groupname should contain not more than one underscore, groupname: {groupName}" });
+                return validatedResult;
+            }
+            else {
+                if (Config.AccountInfos.Where(x => x.FriendlyName == splittedResult[0]).Count() != 1)
+                {
+                    LogCollection.Add(new logItem { type = "error", message = $"Unknown Group, groupname: {splittedResult[0]}" });
+                    return string.Empty;
+                }
+                if (Config.Roles.Where(x => x.FriendlyName == splittedResult[1]).Count() != 1)
+                {
+                    LogCollection.Add(new logItem { type = "error", message = $"Unknown Role, role: {splittedResult[1]}" });
+                    return string.Empty;
+                }
+                else return splittedResult[0];
+
+            }
+        }
+
         public DirectoryUsersOverview DirectoryGroupsResult { get; set; }
         public AnalyticsUsersOverview AnalyticsUsersOverview { get; set; }
         public Hiearchy AnalyticsHiearchy { get; set; }

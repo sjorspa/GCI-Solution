@@ -25,11 +25,25 @@ namespace GCI_Test
             directoryGroup2.GroupMembers.Add(new GroupMember { Email = "user3@mail.com" });
             directoryUsersOverview.DirectoryGroups.Add(directoryGroup2);
 
+            //Invalid Domain
             DirectoryGroup directoryGroup3 = new DirectoryGroup { Name = "xxxxxxxxxxxx_admin" };
             directoryGroup3.GroupMembers.Add(new GroupMember { Email = "user1@mail.com" });
-            directoryGroup3.GroupMembers.Add(new GroupMember { Email = "user2@mail.com" });
-            directoryGroup3.GroupMembers.Add(new GroupMember { Email = "user3@mail.com" });
             directoryUsersOverview.DirectoryGroups.Add(directoryGroup3);
+
+            //Invalid Domain no Underscores
+            DirectoryGroup directoryGroup5 = new DirectoryGroup { Name = "xxxxxxadmin" };
+            directoryUsersOverview.DirectoryGroups.Add(directoryGroup5);
+
+            //Invalid Domain Multiple Underscores
+            DirectoryGroup directoryGroup6 = new DirectoryGroup { Name = "_xxxxx_xxxxxxx_admin" };
+            directoryUsersOverview.DirectoryGroups.Add(directoryGroup5);
+
+
+            //Invalid Role
+            DirectoryGroup directoryGroup4 = new DirectoryGroup { Name = "nl_invalidrole" };
+            directoryGroup3.GroupMembers.Add(new GroupMember { Email = "user1@mail.com" });
+            directoryUsersOverview.DirectoryGroups.Add(directoryGroup4);
+
 
             AnalyticsUsersOverview analyticsUsersOverview = new AnalyticsUsersOverview();
             AnalyticsAccount analyticsAccount1 = new AnalyticsAccount { name = "accounts/196069204" };
@@ -67,7 +81,7 @@ namespace GCI_Test
         [Test]
         public void AddingInvalidDomainPrefixShouldResultInAErrorObject()
         {
-            Assert.That(directoryComparer.LogCollection.Count, Is.EqualTo(1));
+            Assert.That(directoryComparer.LogCollection.Count, Is.EqualTo(5));
         }
     }
 }
