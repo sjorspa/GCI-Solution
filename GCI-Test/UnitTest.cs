@@ -36,7 +36,7 @@ namespace GCI_Test
 
             //Invalid Domain Multiple Underscores
             DirectoryGroup directoryGroup6 = new DirectoryGroup { Name = "_xxxxx_xxxxxxx_admin" };
-            directoryUsersOverview.DirectoryGroups.Add(directoryGroup5);
+            directoryUsersOverview.DirectoryGroups.Add(directoryGroup6);
 
 
             //Invalid Role
@@ -50,9 +50,13 @@ namespace GCI_Test
             analyticsAccount1.AnalyticsUsers.Add(new AnalyticsUser { Email = "user1@mail.com", DirectRoles = "predefinedRoles/admin".Split(',').ToList() });
             analyticsAccount1.AnalyticsUsers.Add(new AnalyticsUser { Email = "user2@mail.com", DirectRoles = "predefinedRoles/editor".Split(',').ToList() });
             analyticsAccount1.AnalyticsUsers.Add(new AnalyticsUser { Email = "usertoremove@mail.com", DirectRoles = "predefinedRoles/admin".Split(',').ToList() });
+            analyticsAccount1.AnalyticsUsers.Add(new AnalyticsUser { Email = "pleasedonotdeleteme@mail.com", DirectRoles = "predefinedRoles/admin".Split(',').ToList() });
             analyticsUsersOverview.AnalyticsAccounts.Add(analyticsAccount1);
 
-
+            AnalyticsAccount analyticsAccount2 = new AnalyticsAccount { name = "accounts/xxxxxxxxxx"};
+            analyticsAccount2.AnalyticsUsers.Add(new AnalyticsUser { Email = "user5@mail.com", DirectRoles = "predefinedRoles/admin".Split(',').ToList() });
+            analyticsUsersOverview.AnalyticsAccounts.Add(analyticsAccount2);
+            
             ConfigurationObject configurationObject = new ConfigurationObject();
             configurationObject.AccountInfos.Add(new AccountInfo { AnalyticsID = "accounts/196069204", FriendlyName = "nl" });
             configurationObject.AccountInfos.Add(new AccountInfo { AnalyticsID = "accounts/270720121", FriendlyName = "en" });
@@ -63,6 +67,8 @@ namespace GCI_Test
             configurationObject.Roles.Add(new Role { FriendlyName = "Blank", Rolename = "Blank" });
             configurationObject.Roles.Add(new Role { FriendlyName = "no-cost-data", Rolename = "predefinedRoles/no-cost-data" });
             configurationObject.Roles.Add(new Role { FriendlyName = "no-revenue-data", Rolename = "predefinedRoles/no-revenue-data" });
+            configurationObject.ProtectedAccunts.Add("pleasedonotdeleteme@mail.com");
+
             directoryComparer = new DirectoryComparer(directoryUsersOverview, analyticsUsersOverview, configurationObject);
             upsertActions = directoryComparer.GetComparisonResult();
         }
@@ -71,6 +77,8 @@ namespace GCI_Test
         public void Adding2UsersShouldResultIn2AddedUpsertActions()
         {
             Assert.That(upsertActions.Where(x => x.Action == "Add").Count, Is.EqualTo(2));
+            Assert.That(upsertActions.Where(x => x.Action == "Add").Count, Is.EqualTo(2));
+
         }
         [Test]
         public void Removing1UserShouldResultInOneAddedUpsertActionOfTypeRemove()
@@ -81,7 +89,34 @@ namespace GCI_Test
         [Test]
         public void AddingInvalidDomainPrefixShouldResultInAErrorObject()
         {
-            Assert.That(directoryComparer.LogCollection.Count, Is.EqualTo(5));
+            Assert.That(directoryComparer.LogCollection.Count, Is.EqualTo(6));
         }
+        [Test]
+        public void AddingInvalidDomainShouldResultInLogMessage()
+        {
+            Assert.That(directoryComparer.LogCollection.Where(x => x.message == "No account found for accounts/xxxxxxxxxx in configuration").Count, Is.EqualTo(1));
+        }
+        [Test]
+        public void AddingInvalidGroupShouldResultInLogMessage()
+        {
+            Assert.That(directoryComparer.LogCollection.Where(x => x.message == "Unknown Group, groupname: xxxxxxxxxxxx").Count, Is.EqualTo(1));
+        }
+        [Test]
+        public void GroupNameShouldContainAUnderscoreAndResultInLogMessage()
+        {
+            Assert.That(directoryComparer.LogCollection.Where(x => x.message == "Groupname should contain a underscore, groupname: xxxxxxadmin").Count, Is.EqualTo(1));
+        }
+        [Test]
+        public void GroupNameShouldContainNotMoreThanOneUnderscoreAndResultInLogMessage()
+        {
+            Assert.That(directoryComparer.LogCollection.Where(x => x.message == "Groupname should contain not more than one underscore, groupname: _xxxxx_xxxxxxx_admin").Count, Is.EqualTo(1));
+        }
+        [Test]
+        public void UnknownRoleShouldLeadToLogMessage()
+        {
+            Assert.That(directoryComparer.LogCollection.Where(x => x.message == "Unknown Role, role: invalidrole").Count, Is.EqualTo(1));
+        }
+
+
     }
 }

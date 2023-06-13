@@ -9,7 +9,7 @@ namespace GCI_Function_App.Business
         public DirectoryComparer() { }
         public DirectoryComparer(DirectoryUsersOverview directoryGroupsResult, AnalyticsUsersOverview analyticsUsersOverview, ConfigurationObject configurationObject)
         {
-                        Config = configurationObject;
+            Config = configurationObject;
             DirectoryGroupsResult = directoryGroupsResult;
             AnalyticsUsersOverview = analyticsUsersOverview;
             AnalyticsHiearchy = GroupAnalyticsUsers();
@@ -49,7 +49,7 @@ namespace GCI_Function_App.Business
                         }
                         foreach (var accountGroupMemberin in analyticsAccountGroup.AccountGroupMembers)
                         {
-                            if (directoryAccountGroup.AccountGroupMembers.Where(x => x.Email == accountGroupMemberin.Email).FirstOrDefault() == null)
+                            if (directoryAccountGroup.AccountGroupMembers.Where(x => x.Email == accountGroupMemberin.Email).FirstOrDefault() == null && Config.ProtectedAccunts.Where(x => x== accountGroupMemberin.Email).Count()==0)
                             {
                                 //remove member
                                 Console.WriteLine($"Removing {accountGroupMemberin.Email} from Group {analyticsAccountGroup.Name} of Account {GetFriendlyNameByAnalayticsIC(analyticsAccount.Name)}");
@@ -107,21 +107,27 @@ namespace GCI_Function_App.Business
             Hiearchy hiearchy = new Hiearchy();
             foreach (var analyticsAccounts in AnalyticsUsersOverview.AnalyticsAccounts)
             {
-                var account = new Account();
-                account.Name = analyticsAccounts.name;
-                foreach (var groupMember in analyticsAccounts.AnalyticsUsers)
-                {
-                    foreach (var directRole in groupMember.DirectRoles)
+                if (Config.AccountInfos.Where(x => x.AnalyticsID == analyticsAccounts.name).Count() == 1) {
+                    var account = new Account();
+                    account.Name = analyticsAccounts.name;
+                    foreach (var groupMember in analyticsAccounts.AnalyticsUsers)
                     {
-                        var groupCount = account.AccountGroups.Where(x => x.Name == ConvertDirectRole(directRole)).Count();
-                        if (groupCount == 0)
+                        foreach (var directRole in groupMember.DirectRoles)
                         {
-                            account.AccountGroups.Add(new AccountGroup() { Name = ConvertDirectRole(directRole) });
+                            var groupCount = account.AccountGroups.Where(x => x.Name == ConvertDirectRole(directRole)).Count();
+                            if (groupCount == 0)
+                            {
+                                account.AccountGroups.Add(new AccountGroup() { Name = ConvertDirectRole(directRole) });
+                            }
+                            account.AccountGroups.FirstOrDefault(x => x.Name == ConvertDirectRole(directRole)).AccountGroupMembers.Add(new AccountGroupMember { Email = groupMember.Email });
                         }
-                        account.AccountGroups.FirstOrDefault(x => x.Name == ConvertDirectRole(directRole)).AccountGroupMembers.Add(new AccountGroupMember { Email = groupMember.Email });
                     }
+                    hiearchy.Accounts.Add(account);
                 }
-                hiearchy.Accounts.Add(account);
+                else {
+                    LogCollection.Add(new logItem { type = "error", message = $"No account found for {analyticsAccounts.name} in configuration" });
+                }
+
             }
             return hiearchy;
         }
@@ -157,7 +163,7 @@ namespace GCI_Function_App.Business
 
                     var groupName = ValidateGroupName(directoryGroup.Name);
 
-                    if (!accountResult.Contains(groupName))
+                    if (!accountResult.Contains(groupName) && !string.IsNullOrEmpty(groupName))
                     {
                             accountResult.Add(groupName);
                     }
@@ -172,7 +178,7 @@ namespace GCI_Function_App.Business
                 return validatedResult;
             }
             var splittedResult = groupName.Split('_').ToList();
-            if (splittedResult.Count() != 2)
+            if (splittedResult.Count() > 2)
             {
                 LogCollection.Add(new logItem { type = "error", message = $"Groupname should contain not more than one underscore, groupname: {groupName}" });
                 return validatedResult;
