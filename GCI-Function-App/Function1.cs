@@ -1,6 +1,7 @@
 using GCI_Function_App.Business;
 using GCI_Function_App.Classes;
 using GCI_Function_App.Clients;
+using LogAnalytics.Client;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Logging;
 using System;
@@ -51,6 +52,15 @@ namespace GCI_Function_App
                 analyticsUsersOverview.AnalyticsAccounts.Add(analyticsAccount);
             }
             DirectoryComparer directoryComparer = new DirectoryComparer(directoryUsersOverview, analyticsUsersOverview, new ConfigurationObject());
+            LogAnalyticsClient logger = new LogAnalyticsClient(
+                workspaceId: "b9f917b9-00ff-45a5-a106-31a822ea2d86",
+                sharedKey: "ATRxzK7/9cqJcxv3YUQLlcCxCFB+eI9M85lHTs/gTfTb0J/2iwE/DDfC5SKkfDhriuEB0RYx2VSlZityPVmhIA==");
+            logger.SendLogEntry(new UpsertItem
+            {
+                Action = "Add",
+                Account = $"String Test",
+                Email = "sjorsp@gmail.com",
+            }, "UpsertLog").Wait();
         }
     }
 }

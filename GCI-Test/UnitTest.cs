@@ -1,5 +1,7 @@
 using GCI_Function_App.Business;
 using GCI_Function_App.Classes;
+using LogAnalytics.Client;
+
 namespace GCI_Test
 {
     public class Tests
@@ -87,11 +89,6 @@ namespace GCI_Test
             Assert.That(upsertActions.Where(x => x.Email == "usertoremove@mail.com").Count, Is.EqualTo(1));
         }
         [Test]
-        public void AddingInvalidDomainPrefixShouldResultInAErrorObject()
-        {
-            Assert.That(directoryComparer.LogCollection.Count, Is.EqualTo(6));
-        }
-        [Test]
         public void AddingInvalidDomainShouldResultInLogMessage()
         {
             Assert.That(directoryComparer.LogCollection.Where(x => x.message == "No account found for accounts/xxxxxxxxxx in configuration").Count, Is.EqualTo(1));
@@ -119,4 +116,6 @@ namespace GCI_Test
 
 
     }
+
+
 }

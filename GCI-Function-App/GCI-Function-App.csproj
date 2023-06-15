@@ -10,6 +10,8 @@
     <PackageReference Include="Google.Apis.Admin.Directory.directory_v1" Version="1.60.0.3064" />
     <PackageReference Include="Google.Apis.Auth" Version="1.60.0" />
     <PackageReference Include="Google.Apis.GoogleAnalyticsAdmin.v1alpha" Version="1.60.0.3052" />
+    <PackageReference Include="LogAnalytics.Client" Version="6.2.0" />
+    <PackageReference Include="Microsoft.ApplicationInsights" Version="2.21.0" />
     <PackageReference Include="Microsoft.NET.Sdk.Functions" Version="4.1.1" />
   </ItemGroup>
   <ItemGroup>
