@@ -6,5 +6,6 @@
         public string Group;
         public string Email;
         public string Action;
+        public string AnaltyicsUserName;
     }
 }

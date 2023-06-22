@@ -8,6 +8,7 @@ namespace GCI_Function_App.Classes
         public string Account;
         public string Email;
         public string Action;
+        public string AnaltyicsUserName;
     }
 
 }

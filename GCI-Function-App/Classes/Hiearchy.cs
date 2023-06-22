@@ -32,7 +32,8 @@ namespace GCI_Function_App.Classes
     }
     public class AccountGroupMember
     {
-        internal string Email;
-        internal string Id;
+        public string Email;
+        public string Id;
+        public string Name;
     }
 }

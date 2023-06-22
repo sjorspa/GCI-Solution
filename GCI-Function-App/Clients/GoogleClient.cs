@@ -1,4 +1,5 @@
-﻿using Google.Apis.Admin.Directory.directory_v1;
+﻿using GCI_Function_App.Classes;
+using Google.Apis.Admin.Directory.directory_v1;
 using Google.Apis.Admin.Directory.directory_v1.Data;
 using Google.Apis.Auth.OAuth2;
 using Google.Apis.GoogleAnalyticsAdmin.v1alpha;
@@ -6,6 +7,8 @@ using Google.Apis.GoogleAnalyticsAdmin.v1alpha.Data;
 using Google.Apis.Services;
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using Role = GCI_Function_App.Classes.Role;
 
 namespace GCI_Function_App.Clients
 {
@@ -24,20 +27,6 @@ namespace GCI_Function_App.Clients
             CreateDirectoryService();
         }
 
-        public Users GetDirectoryUsers(string domain)
-        {
-            var list = _directoryService.Users.List();
-            list.Domain = domain;
-            try
-            {
-                var users = list.Execute();
-                return users;
-            }
-            catch (Exception e)
-            {
-                return null;
-            }
-        }
 
         public Groups GetGroups(string domain)
         {
@@ -93,6 +82,38 @@ namespace GCI_Function_App.Clients
             catch (Exception e)
             {
                 return null;
+            }
+        }
+
+
+        public void RemoveAnalyticsUser(string account)
+        {
+            var googleAnalyticsAdminService = _googleAnalyticsAdminService.Accounts.UserLinks.Delete(account);
+            try
+            {
+                googleAnalyticsAdminService.Execute();
+            }
+            catch (Exception e)
+            {
+            }
+        }
+
+        public void AddAnalyticsUser(string emailAddress, string parent, List<Role> roles, string directroles)
+        {
+            var efficiveroles = new List<string>();
+            foreach (var role in directroles.Split(',').ToList())
+            {
+                if (roles.Where(x => x.FriendlyName == role).Count()==1) { 
+                    efficiveroles.Add(roles.Where(x => x.FriendlyName == role).FirstOrDefault().Rolename);
+                }
+            }
+            var googleAnalyticsAdminService = _googleAnalyticsAdminService.Accounts.UserLinks.Create(new GoogleAnalyticsAdminV1alphaUserLink { EmailAddress = emailAddress, DirectRoles = efficiveroles },parent);
+            try
+            {
+                googleAnalyticsAdminService.Execute();
+            }
+            catch (Exception e)
+            {
             }
         }
 

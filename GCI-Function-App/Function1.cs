@@ -4,7 +4,10 @@ using GCI_Function_App.Clients;
 using LogAnalytics.Client;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using System;
+using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace GCI_Function_App
@@ -16,6 +19,8 @@ namespace GCI_Function_App
         {
             var azureClient = new AzureClient(Environment.GetEnvironmentVariable("keyvault"));
             var credentials = azureClient.GetKeyVaultSecretAsync("directoryuser").ToString();
+            var logspace = azureClient.GetKeyVaultSecretAsync("logspace").ToString();
+
             var googleClient = new GoogleClient(credentials, "sjors@hamertijd.com");
             //var directoryUsersResult = googleClient.GetDirectoryUsers("hamertijd.com");
             var directoryGroupsResult = googleClient.GetGroups("hamertijd.com");
@@ -51,16 +56,33 @@ namespace GCI_Function_App
                 }
                 analyticsUsersOverview.AnalyticsAccounts.Add(analyticsAccount);
             }
-            DirectoryComparer directoryComparer = new DirectoryComparer(directoryUsersOverview, analyticsUsersOverview, new ConfigurationObject());
+            var configurationObject = JsonConvert.DeserializeObject<ConfigurationObject>(File.ReadAllText(@"configuration.json"));
+            DirectoryComparer directoryComparer = new DirectoryComparer(directoryUsersOverview, analyticsUsersOverview, configurationObject);
+            var result = directoryComparer.GenerateComparisonResult();
+
             LogAnalyticsClient logger = new LogAnalyticsClient(
-                workspaceId: "b9f917b9-00ff-45a5-a106-31a822ea2d86",
-                sharedKey: "ATRxzK7/9cqJcxv3YUQLlcCxCFB+eI9M85lHTs/gTfTb0J/2iwE/DDfC5SKkfDhriuEB0RYx2VSlZityPVmhIA==");
-            logger.SendLogEntry(new UpsertItem
+                workspaceId: Environment.GetEnvironmentVariable("workspaceId"),
+                sharedKey: logspace);
+            foreach (var entry in result)
             {
-                Action = "Add",
-                Account = $"String Test",
-                Email = "sjorsp@gmail.com",
-            }, "UpsertLog").Wait();
+                if (entry.Action == "Add")
+                {
+                    googleClient.AddAnalyticsUser(entry.Email,entry.Account, configurationObject.Roles, entry.Group);
+                }
+                if (entry.Action == "Remove")
+                {
+                    googleClient.RemoveAnalyticsUser(entry.AnaltyicsUserName);
+                }
+
+                logger.SendLogEntry(new UpsertItem
+                {
+                    Action = entry.Action,
+                    Account = entry.Account,
+                    Email = entry.Email,
+                    AnaltyicsUserName = entry.AnaltyicsUserName
+                }, "UpsertEntries").Wait();
+            }
+
         }
     }
 }

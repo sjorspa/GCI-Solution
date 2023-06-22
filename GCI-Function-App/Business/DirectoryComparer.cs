@@ -40,6 +40,7 @@ namespace GCI_Function_App.Business
                         }
                         foreach (var directoryAccountGroupMember in directoryAccountGroup.AccountGroupMembers)
                         {
+                            var AnalayticsUser = analyticsAccountGroup.AccountGroupMembers.Where(x => x.Email == directoryAccountGroupMember.Email).FirstOrDefault();
                             if (analyticsAccountGroup.AccountGroupMembers.Where(x => x.Email == directoryAccountGroupMember.Email).FirstOrDefault() == null)
                             {
                                 //add member
@@ -53,14 +54,26 @@ namespace GCI_Function_App.Business
                             {
                                 //remove member
                                 Console.WriteLine($"Removing {accountGroupMemberin.Email} from Group {analyticsAccountGroup.Name} of Account {GetFriendlyNameByAnalayticsIC(analyticsAccount.Name)}");
-                                upsertActions.Add(new UpsertAction { Action = "Remove", Email = accountGroupMemberin.Email, Group = analyticsAccountGroup.Name, Account = analyticsAccount.Name });
+                                upsertActions.Add(new UpsertAction { Action = "Remove",AnaltyicsUserName= accountGroupMemberin.Name, Email = accountGroupMemberin.Email, Group = analyticsAccountGroup.Name, Account = analyticsAccount.Name });
                             }
 
                         }
                     }
                 }
             }
-            return upsertActions;
+            List<UpsertAction> upsertActionsCleaned = new List<UpsertAction>();
+            foreach (var action in upsertActions) {
+                if (upsertActionsCleaned.Where(x => x.Account == action.Account && x.Email == action.Email).Count() == 0)
+                {
+                    upsertActionsCleaned.Add(action);
+                }
+                else {
+                    upsertActionsCleaned.Where(x => x.Account == action.Account && x.Email == action.Email).FirstOrDefault().Group =
+                    upsertActionsCleaned.Where(x => x.Account == action.Account && x.Email == action.Email).FirstOrDefault().Group+
+                    ','+action.Group                    ;
+                }
+            }
+            return upsertActionsCleaned;
         }
         private string GetAnalyticsIdbyFriendlyName(string friendlyName)
         {
@@ -119,7 +132,7 @@ namespace GCI_Function_App.Business
                             {
                                 account.AccountGroups.Add(new AccountGroup() { Name = ConvertDirectRole(directRole) });
                             }
-                            account.AccountGroups.FirstOrDefault(x => x.Name == ConvertDirectRole(directRole)).AccountGroupMembers.Add(new AccountGroupMember { Email = groupMember.Email });
+                            account.AccountGroups.FirstOrDefault(x => x.Name == ConvertDirectRole(directRole)).AccountGroupMembers.Add(new AccountGroupMember { Email = groupMember.Email, Name = groupMember.Name });
                         }
                     }
                     hiearchy.Accounts.Add(account);
@@ -134,69 +147,31 @@ namespace GCI_Function_App.Business
         public Hiearchy GroupDirectoryUsers()
         {
             Hiearchy hiearchy = new Hiearchy();
-            var accountGroups = ExtractAccounts(DirectoryGroupsResult.DirectoryGroups);
-            foreach (var accountGroup in accountGroups)
+            foreach (var accountGroup in DirectoryGroupsResult.DirectoryGroups)
             {
-                var account = new Account();
-                account.Name = accountGroup;
-                foreach (var directoryGroup in DirectoryGroupsResult.DirectoryGroups)
+                var mappedGroup = Config.GroupRoleMappings.Where(x => x.GroupName == accountGroup.Name).FirstOrDefault();
+                if (mappedGroup == null)
                 {
-                    if (directoryGroup.Name.StartsWith($"{accountGroup}_"))
-                    {
-                        var group = new AccountGroup { Name = directoryGroup.Name.Replace($"{accountGroup}_", "") };
-                        foreach (var groupMember in directoryGroup.GroupMembers)
-                        {
-                            group.AccountGroupMembers.Add(new AccountGroupMember { Email = groupMember.Email });
-                        }
-                        account.AccountGroups.Add(group);
-                    }
+                    LogCollection.Add(new logItem { type = "error", message = $"No account found for {accountGroup.Name} in configuration" });
                 }
-                hiearchy.Accounts.Add(account);
+                else
+                { 
+                    if (hiearchy.Accounts.Where(x=>x.Name == mappedGroup.Account).Count() == 0) {
+                        var account = new Account();
+                        account.Name = mappedGroup.Account;
+                        hiearchy.Accounts.Add(account);
+                    }
+                    var Group = new AccountGroup { Name = mappedGroup.RoleName };
+                    foreach (var groupMember in accountGroup.GroupMembers)
+                    {
+                        Group.AccountGroupMembers.Add(new AccountGroupMember { Email = groupMember.Email });
+                    }
+                    hiearchy.Accounts.Where(x => x.Name == mappedGroup.Account).FirstOrDefault().AccountGroups.Add(Group);
+                }
+
+
             }
             return hiearchy;
-        }
-        private List<string> ExtractAccounts(List<DirectoryGroup> directoryGroups)
-        {
-            List<string> accountResult = new List<string>();
-            foreach (var directoryGroup in directoryGroups)
-            {
-
-                    var groupName = ValidateGroupName(directoryGroup.Name);
-
-                    if (!accountResult.Contains(groupName) && !string.IsNullOrEmpty(groupName))
-                    {
-                            accountResult.Add(groupName);
-                    }
-            }
-            return accountResult;
-        }
-
-        private string ValidateGroupName(string groupName) {
-            string validatedResult=string.Empty;
-            if (!groupName.Contains("_") ) {
-                LogCollection.Add(new logItem { type = "error", message = $"Groupname should contain a underscore, groupname: {groupName}" });
-                return validatedResult;
-            }
-            var splittedResult = groupName.Split('_').ToList();
-            if (splittedResult.Count() > 2)
-            {
-                LogCollection.Add(new logItem { type = "error", message = $"Groupname should contain not more than one underscore, groupname: {groupName}" });
-                return validatedResult;
-            }
-            else {
-                if (Config.AccountInfos.Where(x => x.FriendlyName == splittedResult[0]).Count() != 1)
-                {
-                    LogCollection.Add(new logItem { type = "error", message = $"Unknown Group, groupname: {splittedResult[0]}" });
-                    return string.Empty;
-                }
-                if (Config.Roles.Where(x => x.FriendlyName == splittedResult[1]).Count() != 1)
-                {
-                    LogCollection.Add(new logItem { type = "error", message = $"Unknown Role, role: {splittedResult[1]}" });
-                    return string.Empty;
-                }
-                else return splittedResult[0];
-
-            }
         }
 
         public DirectoryUsersOverview DirectoryGroupsResult { get; set; }

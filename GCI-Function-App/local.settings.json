@@ -5,7 +5,8 @@
     "FUNCTIONS_WORKER_RUNTIME": "dotnet",
     "domain": "hamertijd.com",
     "impersonateAccount": "sjors@hamertijd.com",
-    "keyvault": "asfasfasj234234"
+    "keyvault": "asfasfasj234234",
+    "workspaceId": "b9f917b9-00ff-45a5-a106-31a822ea2d86"
 
   }
 }
