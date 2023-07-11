@@ -7,5 +7,6 @@
         public string Email;
         public string Action;
         public string AnaltyicsUserName;
+        public bool removeUnmigratedMembers;
     }
 }

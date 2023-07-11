@@ -25,6 +25,8 @@ namespace GCI_Function_App.Classes
         public string GroupName;
         public string RoleName;
         public string Account;
+        public bool RemoveUnmigratedMembers;
+
     }
 
     public class Role

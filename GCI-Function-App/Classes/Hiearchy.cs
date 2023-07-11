@@ -21,14 +21,16 @@ namespace GCI_Function_App.Classes
     }
     public class AccountGroup
     {
-        internal string Name;
-        internal string GroupId;
+        public string Name;
+        public string GroupId;
+        public bool RemoveUnmigratedMembers;
 
         public AccountGroup()
         {
             AccountGroupMembers = new List<AccountGroupMember>();
         }
         public List<AccountGroupMember> AccountGroupMembers { get; set; }
+
     }
     public class AccountGroupMember
     {

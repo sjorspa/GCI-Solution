@@ -23,6 +23,18 @@
       ]
     },
     {
+      "Name": "eneditor",
+      "GroupMembers": [
+        {
+          "Email": "user1@mail.com",
+          "Id": null
+        }
+      ]
+    },
+    {
+      "Name": "enanalyst"
+    },
+    {
       "Name": "nonexistingitem",
       "GroupMembers": [
         {

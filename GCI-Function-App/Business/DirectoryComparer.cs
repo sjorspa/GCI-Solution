@@ -53,8 +53,15 @@ namespace GCI_Function_App.Business
                             if (directoryAccountGroup.AccountGroupMembers.Where(x => x.Email == accountGroupMemberin.Email).FirstOrDefault() == null && Config.ProtectedAccunts.Where(x => x== accountGroupMemberin.Email).Count()==0)
                             {
                                 //remove member
-                                Console.WriteLine($"Removing {accountGroupMemberin.Email} from Group {analyticsAccountGroup.Name} of Account {GetFriendlyNameByAnalayticsIC(analyticsAccount.Name)}");
-                                upsertActions.Add(new UpsertAction { Action = "Remove",AnaltyicsUserName= accountGroupMemberin.Name, Email = accountGroupMemberin.Email, Group = analyticsAccountGroup.Name, Account = analyticsAccount.Name });
+                                if (analyticsAccountGroup.RemoveUnmigratedMembers)
+                                {
+                                    Console.WriteLine($"Removing {accountGroupMemberin.Email} from Group {analyticsAccountGroup.Name} of Account {GetFriendlyNameByAnalayticsIC(analyticsAccount.Name)}");
+                                    upsertActions.Add(new UpsertAction { Action = "Remove", AnaltyicsUserName = accountGroupMemberin.Name, Email = accountGroupMemberin.Email, Group = analyticsAccountGroup.Name, removeUnmigratedMembers = analyticsAccountGroup.RemoveUnmigratedMembers, Account = analyticsAccount.Name });
+                                }
+                                else {
+                                    Console.WriteLine($"Retaining {accountGroupMemberin.Email} from Group {analyticsAccountGroup.Name} of Account {GetFriendlyNameByAnalayticsIC(analyticsAccount.Name)}");
+                                    upsertActions.Add(new UpsertAction { Action = "Retain", AnaltyicsUserName = accountGroupMemberin.Name, Email = accountGroupMemberin.Email, Group = analyticsAccountGroup.Name, removeUnmigratedMembers = analyticsAccountGroup.RemoveUnmigratedMembers, Account = analyticsAccount.Name });
+                                }
                             }
 
                         }
@@ -159,9 +166,9 @@ namespace GCI_Function_App.Business
                     if (hiearchy.Accounts.Where(x=>x.Name == mappedGroup.Account).Count() == 0) {
                         var account = new Account();
                         account.Name = mappedGroup.Account;
-                        hiearchy.Accounts.Add(account);
+                                 hiearchy.Accounts.Add(account);
                     }
-                    var Group = new AccountGroup { Name = mappedGroup.RoleName };
+                    var Group = new AccountGroup { Name = mappedGroup.RoleName, RemoveUnmigratedMembers = mappedGroup.RemoveUnmigratedMembers };
                     foreach (var groupMember in accountGroup.GroupMembers)
                     {
                         Group.AccountGroupMembers.Add(new AccountGroupMember { Email = groupMember.Email });

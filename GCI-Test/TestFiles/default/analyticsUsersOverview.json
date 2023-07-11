@@ -30,7 +30,22 @@
               "predefinedRoles/admin"
             ],
             "Name": null
+          },
+          {
+            "Email": "usertoretain@mail.com",
+            "DirectRoles": [
+              "predefinedRoles/editor"
+            ],
+            "Name": null
+          },
+          {
+            "Email": "usertoremove@mail.com",
+            "DirectRoles": [
+              "predefinedRoles/analyst"
+            ],
+            "Name": null
           }
+
         ]
       }
     ]

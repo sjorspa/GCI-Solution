@@ -6,7 +6,12 @@
     "domain": "hamertijd.com",
     "impersonateAccount": "sjors@hamertijd.com",
     "keyvault": "asfasfasj234234",
-    "workspaceId": "b9f917b9-00ff-45a5-a106-31a822ea2d86"
+    "workspaceId": "b9f917b9-00ff-45a5-a106-31a822ea2d86",
+    "googleProject": "animated-cinema-387607",
+    "rotationAccount": "secretrotator@animated-cinema-387607.iam.gserviceaccount.com",
+    "serviceAccount": "functionservice@animated-cinema-387607.iam.gserviceaccount.com",
+    "kvserviceAccount": "serviceaccount",
+    "kvrotationAccount": "secretrotator"
 
   }
 }
