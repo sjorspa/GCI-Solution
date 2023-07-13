@@ -34,14 +34,14 @@
           {
             "Email": "usertoretain@mail.com",
             "DirectRoles": [
-              "predefinedRoles/editor"
+              "predefinedRoles/analyst"
             ],
             "Name": null
           },
           {
             "Email": "usertoremove@mail.com",
             "DirectRoles": [
-              "predefinedRoles/analyst"
+              "predefinedRoles/editor"
             ],
             "Name": null
           }

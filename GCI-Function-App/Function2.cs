@@ -23,6 +23,8 @@ namespace GCI_Function_App
             var credentials = azureClient.GetKeyVaultSecretAsync("secretrotator").ToString();
             iamClient = new GoogleIAMClient(credentials);
             SetupNewKeySequence(Environment.GetEnvironmentVariable("serviceAccount"), Environment.GetEnvironmentVariable("googleProject"), Environment.GetEnvironmentVariable("kvserviceAccount"));
+            SetupNewKeySequence(Environment.GetEnvironmentVariable("rotationAccount"), Environment.GetEnvironmentVariable("googleProject"), Environment.GetEnvironmentVariable("kvrotationAccount"));
+
         }
 
         public static void SetupNewKeySequence(string account, string project, string secretName) {

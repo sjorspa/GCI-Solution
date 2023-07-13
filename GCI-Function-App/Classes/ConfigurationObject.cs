@@ -11,7 +11,7 @@ namespace GCI_Function_App.Classes
         public List<Role> Roles { get; set; } = new List<Role>();
         public List<GroupRoleMapping> GroupRoleMappings { get; set; } = new List<GroupRoleMapping>();
 
-        public List<String> ProtectedAccunts { get; set; } = new List<String>();
+        public List<String> ProtectedAccounts { get; set; } = new List<String>();
 
     }
     public class AnalyticsAccountInfo

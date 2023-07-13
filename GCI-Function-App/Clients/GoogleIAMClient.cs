@@ -51,7 +51,7 @@ namespace GCI_Function_App.Clients
             currentKeys = currentKeys.Take(currentKeys.Count -1).ToList();
 
             foreach (var key in currentKeys) {
-                //_iamService.Projects.ServiceAccounts.Keys.Delete(key.Name).Execute();
+                _iamService.Projects.ServiceAccounts.Keys.Delete(key.Name).Execute();
             }
 
             //var result = _iamService.Projects.ServiceAccounts.Keys.Delete(key).Execute();

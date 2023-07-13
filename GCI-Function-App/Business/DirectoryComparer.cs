@@ -50,7 +50,7 @@ namespace GCI_Function_App.Business
                         }
                         foreach (var accountGroupMemberin in analyticsAccountGroup.AccountGroupMembers)
                         {
-                            if (directoryAccountGroup.AccountGroupMembers.Where(x => x.Email == accountGroupMemberin.Email).FirstOrDefault() == null && Config.ProtectedAccunts.Where(x => x== accountGroupMemberin.Email).Count()==0)
+                            if (directoryAccountGroup.AccountGroupMembers.Where(x => x.Email == accountGroupMemberin.Email).FirstOrDefault() == null && Config.ProtectedAccounts.Where(x => x== accountGroupMemberin.Email).Count()==0)
                             {
                                 //remove member
                                 if (analyticsAccountGroup.RemoveUnmigratedMembers)
@@ -125,19 +125,23 @@ namespace GCI_Function_App.Business
         public Hiearchy GroupAnalyticsUsers()
         {
             Hiearchy hiearchy = new Hiearchy();
-            foreach (var analyticsAccounts in AnalyticsUsersOverview.AnalyticsAccounts)
+            foreach (var analyticsAccount in AnalyticsUsersOverview.AnalyticsAccounts)
             {
-                if (Config.AccountInfos.Where(x => x.AnalyticsID == analyticsAccounts.name).Count() == 1) {
+                if (Config.AccountInfos.Where(x => x.AnalyticsID == analyticsAccount.name).Count() == 1) {
                     var account = new Account();
-                    account.Name = analyticsAccounts.name;
-                    foreach (var groupMember in analyticsAccounts.AnalyticsUsers)
+                    account.Name = analyticsAccount.name;
+                   
+                    foreach (var groupMember in analyticsAccount.AnalyticsUsers)
                     {
                         foreach (var directRole in groupMember.DirectRoles)
                         {
                             var groupCount = account.AccountGroups.Where(x => x.Name == ConvertDirectRole(directRole)).Count();
                             if (groupCount == 0)
                             {
-                                account.AccountGroups.Add(new AccountGroup() { Name = ConvertDirectRole(directRole) });
+
+                                var friendlyName = Config.AccountInfos.Where(x => x.AnalyticsID == analyticsAccount.name).FirstOrDefault().FriendlyName;
+                                var removeUnmigratedMembers = Config.GroupRoleMappings.Where(x => x.Account == friendlyName && x.RoleName == ConvertDirectRole(directRole)).FirstOrDefault().RemoveUnmigratedMembers;
+                                account.AccountGroups.Add(new AccountGroup() { Name = ConvertDirectRole(directRole), RemoveUnmigratedMembers= removeUnmigratedMembers });
                             }
                             account.AccountGroups.FirstOrDefault(x => x.Name == ConvertDirectRole(directRole)).AccountGroupMembers.Add(new AccountGroupMember { Email = groupMember.Email, Name = groupMember.Name });
                         }
@@ -145,7 +149,7 @@ namespace GCI_Function_App.Business
                     hiearchy.Accounts.Add(account);
                 }
                 else {
-                    LogCollection.Add(new logItem { type = "error", message = $"No account found for {analyticsAccounts.name} in configuration" });
+                    LogCollection.Add(new logItem { type = "error", message = $"No account found for {analyticsAccount.name} in configuration" });
                 }
 
             }

@@ -1,11 +1,11 @@
 {
   "AccountInfos": [
     {
-      "FriendlyName": "nl",
-      "AnalyticsID": "accounts/196069204"
+      "FriendlyName": "test2",
+      "AnalyticsID": "accounts/277403903"
     },
     {
-      "FriendlyName": "en",
+      "FriendlyName": "testdomain",
       "AnalyticsID": "accounts/270720121"
     }
   ],
@@ -39,8 +39,28 @@
       "Rolename": "predefinedRoles/no-revenue-data"
     }
   ],
-  "ProtectedAccunts": [
-    "saccount@animated-cinema-387607.iam.gserviceaccount.com",
+  "GroupRoleMappings": [
+    {
+      "GroupName": "testdomainadmin1",
+      "Rolename": "admin",
+      "Account": "testdomain",
+      "RemoveUnmigratedMembers": true
+    },
+    {
+      "GroupName": "test2editor",
+      "Rolename": "editor",
+      "Account": "test2",
+      "RemoveUnmigratedMembers": false
+    },
+    {
+      "GroupName": "test2admin",
+      "Rolename": "admin",
+      "Account": "test2",
+      "RemoveUnmigratedMembers": true
+    }
+  ],
+  "ProtectedAccounts": [
+    "functionservice@animated-cinema-387607.iam.gserviceaccount.com",
     "sjorsp@gmail.com",
     "contact@cacciucco.nl"
   ]

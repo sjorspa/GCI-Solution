@@ -18,7 +18,7 @@ namespace GCI_Function_App
         public static async Task RunAsync([TimerTrigger("0 */1 * * * *")] TimerInfo myTimer, ILogger log)
         {
             var azureClient = new AzureClient(Environment.GetEnvironmentVariable("keyvault"));
-            var credentials = azureClient.GetKeyVaultSecretAsync("directoryuser").ToString();
+            var credentials = azureClient.GetKeyVaultSecretAsync("serviceaccount").ToString();
             var logspace = azureClient.GetKeyVaultSecretAsync("logspace").ToString();
 
             var googleClient = new GoogleClient(credentials, "sjors@hamertijd.com");
