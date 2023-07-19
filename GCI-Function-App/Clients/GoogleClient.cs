@@ -22,7 +22,6 @@ namespace GCI_Function_App.Clients
         public GoogleClient(string secret, string directoryImpersonateAccount)
         {
             _secret = secret;
-            Console.WriteLine(secret);
             _directoryImpersonateAccount = directoryImpersonateAccount;
             CreateGoogleAnalyticsAdminService();
             CreateDirectoryService();

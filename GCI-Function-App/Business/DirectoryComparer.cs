@@ -140,8 +140,17 @@ namespace GCI_Function_App.Business
                             {
 
                                 var friendlyName = Config.AccountInfos.Where(x => x.AnalyticsID == analyticsAccount.name).FirstOrDefault().FriendlyName;
-                                var removeUnmigratedMembers = Config.GroupRoleMappings.Where(x => x.Account == friendlyName && x.RoleName == ConvertDirectRole(directRole)).FirstOrDefault().RemoveUnmigratedMembers;
-                                account.AccountGroups.Add(new AccountGroup() { Name = ConvertDirectRole(directRole), RemoveUnmigratedMembers= removeUnmigratedMembers });
+                                var group = Config.GroupRoleMappings.Where(x => x.Account == friendlyName && x.RoleName == ConvertDirectRole(directRole)).FirstOrDefault();
+                                if (group != null)
+                                {
+                                    var removeUnmigratedMembers = Config.GroupRoleMappings.Where(x => x.Account == friendlyName && x.RoleName == ConvertDirectRole(directRole)).FirstOrDefault().RemoveUnmigratedMembers;
+                                    account.AccountGroups.Add(new AccountGroup() { Name = ConvertDirectRole(directRole), RemoveUnmigratedMembers = removeUnmigratedMembers });
+                                }
+                                else {
+                                    LogCollection.Add(new logItem { type = "error", message = $"No account found for {friendlyName} and role: {directRole}  in configuration" });
+                                    break;
+                                }
+                                
                             }
                             account.AccountGroups.FirstOrDefault(x => x.Name == ConvertDirectRole(directRole)).AccountGroupMembers.Add(new AccountGroupMember { Email = groupMember.Email, Name = groupMember.Name });
                         }

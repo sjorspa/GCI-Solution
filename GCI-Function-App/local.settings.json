@@ -11,7 +11,8 @@
     "rotationAccount": "secretrotator@animated-cinema-387607.iam.gserviceaccount.com",
     "serviceAccount": "functionservice@animated-cinema-387607.iam.gserviceaccount.com",
     "kvserviceAccount": "serviceaccount",
-    "kvrotationAccount": "secretrotator"
-
+    "kvrotationAccount": "secretrotator",
+    "TimerIntervalRotator": "0 */1 * * * *",
+    "TimerIntervalDirectorySync": "0 */1 * * * *"
   }
 }

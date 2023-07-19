@@ -33,11 +33,6 @@ namespace GCI_Function_App.Clients
     new CreateServiceAccountKeyRequest(),
     serviceAccountl)
     .Execute();
-
-            // The PrivateKeyData field contains the base64-encoded service account key
-            // in JSON format.
-            // TODO(Developer): Save the below key (jsonKeyFile) to a secure location.
-            //  You cannot download it later.
             byte[] valueBytes = System.Convert.FromBase64String(key.PrivateKeyData);
             string jsonKeyContent = Encoding.UTF8.GetString(valueBytes);
 

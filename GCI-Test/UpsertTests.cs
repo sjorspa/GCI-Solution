@@ -5,10 +5,9 @@ using Newtonsoft.Json;
 
 namespace GCI_Test
 {
-    public class Tests
+    public class UpsertTests
     {
         List<UpsertAction> upsertActions;
-        DirectoryUsersOverview directoryUsersOverview = new DirectoryUsersOverview { };
         DirectoryComparer directoryComparer;
         [OneTimeSetUp]
         public void Setup()

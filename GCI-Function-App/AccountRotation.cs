@@ -12,12 +12,12 @@ using System.Threading.Tasks;
 
 namespace GCI_Function_App
 {
-    public class Function2
+    public class AccountRotation
     {
         private static GoogleIAMClient iamClient;
         private static AzureClient azureClient;
-        [FunctionName("Function2")]
-        public static async Task RunAsync([TimerTrigger("0 */1 * * * *")] TimerInfo myTimer, ILogger log)
+        [FunctionName("AccountRotation")]
+        public static async Task RunAsync([TimerTrigger("%TimerIntervalDirectorySync%")] TimerInfo myTimer, ILogger log)
         {
             azureClient = new AzureClient(Environment.GetEnvironmentVariable("keyvault"));
             var credentials = azureClient.GetKeyVaultSecretAsync("secretrotator").ToString();

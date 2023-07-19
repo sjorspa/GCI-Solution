@@ -25,6 +25,15 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="TestFiles\grouptests\analyticsUsersOverview.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="TestFiles\grouptests\configurationObject.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="TestFiles\grouptests\directoryUsersOverview.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="TestFiles\default\analyticsUsersOverview.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

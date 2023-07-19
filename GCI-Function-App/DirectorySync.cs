@@ -12,18 +12,18 @@ using System.Threading.Tasks;
 
 namespace GCI_Function_App
 {
-    public class Function1
+    public class DirectorySync
     {
-        [FunctionName("Function1")]
-        public static async Task RunAsync([TimerTrigger("0 */1 * * * *")] TimerInfo myTimer, ILogger log)
+        [FunctionName("DirectorySync")]
+        public static async Task RunAsync([TimerTrigger("%TimerIntervalRotator%")] TimerInfo myTimer, ILogger log)
         {
             var azureClient = new AzureClient(Environment.GetEnvironmentVariable("keyvault"));
             var credentials = azureClient.GetKeyVaultSecretAsync("serviceaccount").ToString();
             var logspace = azureClient.GetKeyVaultSecretAsync("logspace").ToString();
 
-            var googleClient = new GoogleClient(credentials, "sjors@hamertijd.com");
+            var googleClient = new GoogleClient(credentials, Environment.GetEnvironmentVariable("impersonateAccount"));
             //var directoryUsersResult = googleClient.GetDirectoryUsers("hamertijd.com");
-            var directoryGroupsResult = googleClient.GetGroups("hamertijd.com");
+            var directoryGroupsResult = googleClient.GetGroups(Environment.GetEnvironmentVariable("domain"));
 
             //Get Overview of Groups with their Members
             DirectoryUsersOverview directoryUsersOverview = new DirectoryUsersOverview();

@@ -1,0 +1,71 @@
+{
+  "AccountInfos": [
+    {
+      "FriendlyName": "nlc",
+      "AnalyticsID": "accounts/196069204"
+    },
+    {
+      "FriendlyName": "enc",
+      "AnalyticsID": "accounts/196069205"
+    }
+  ],
+  "Roles": [
+    {
+      "FriendlyName": "viewer",
+      "Rolename": "predefinedRoles/viewer"
+    },
+    {
+      "FriendlyName": "analyst",
+      "Rolename": "predefinedRoles/analyst"
+    },
+    {
+      "FriendlyName": "admin",
+      "Rolename": "predefinedRoles/ad"
+    },
+    {
+      "FriendlyName": "editor",
+      "Rolename": "predefinedRoles/editor"
+    },
+    {
+      "FriendlyName": "Blank",
+      "Rolename": "Blank"
+    },
+    {
+      "FriendlyName": "no-cost-data",
+      "Rolename": "predefinedRoles/no-cost-data"
+    },
+    {
+      "FriendlyName": "no-revenue-data",
+      "Rolename": "predefinedRoles/no-revenue-data"
+    }
+  ],
+  "GroupRoleMappings": [
+    {
+      "GroupName": "nladmin",
+      "Rolename": "admin",
+      "Account": "nl",
+      "RemoveUnmigratedMembers": false
+    },
+    {
+      "GroupName": "enadmin",
+      "Rolename": "admin",
+      "Account": "en",
+      "RemoveUnmigratedMembers": false
+    },
+    {
+      "GroupName": "eneditor",
+      "Rolename": "editor",
+      "Account": "en",
+      "RemoveUnmigratedMembers": true
+    },
+    {
+      "GroupName": "enanalyst",
+      "Rolename": "analyst",
+      "Account": "en",
+      "RemoveUnmigratedMembers": false
+    }
+  ],
+  "ProtectedAccounts": [
+    "pleasedonotdeleteme@mail.com"
+  ]
+}

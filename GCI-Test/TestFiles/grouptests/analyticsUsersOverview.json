@@ -1,0 +1,52 @@
+{
+    "AnalyticsAccounts": [
+      {
+        "name": "accounts/196069204",
+        "DisplayName": null,
+        "AnalyticsUsers": [
+          {
+            "Email": "user1@mail.com",
+            "DirectRoles": [
+              "predefinedRoles/admin"
+            ],
+            "Name": null
+          },
+          {
+            "Email": "usertoremove@mail.com",
+            "DirectRoles": [
+              "predefinedRoles/admin"
+            ],
+            "Name": null
+          }
+        ]
+      },
+      {
+        "name": "accounts/196069205",
+        "DisplayName": null,
+        "AnalyticsUsers": [
+          {
+            "Email": "user1@mail.com",
+            "DirectRoles": [
+              "predefinedRoles/admin"
+            ],
+            "Name": null
+          },
+          {
+            "Email": "usertoretain@mail.com",
+            "DirectRoles": [
+              "predefinedRoles/analyst"
+            ],
+            "Name": null
+          },
+          {
+            "Email": "usertoremove@mail.com",
+            "DirectRoles": [
+              "predefinedRoles/editor"
+            ],
+            "Name": null
+          }
+
+        ]
+      }
+    ]
+}
