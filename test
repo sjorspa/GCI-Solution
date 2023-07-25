@@ -1,0 +1,86 @@
+using System;
+using System.Net.Http.Headers;
+using System.Security.Cryptography;
+using System.Text;
+using Newtonsoft.Json;
+
+class Program
+{
+    static void Main()
+    {
+        string scopes = "https://www.googleapis.com/auth/admin.directory.user.readonly,https://www.googleapis.com/auth/admin.directory.group";
+        string clientEmail = "functionservice@animated-cinema-387607.iam.gserviceaccount.com";
+        string privateKey = "MIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQDArpRWi4Kjzahr\n+07UzNeDnZIYt3D3IigCjY49E6M8/4XdZHTIcUNtNNeDLwKUDVQSNPNKi0TmyIr5\nzVmy7NbfSl+gXZ18ysAHbMbbMeQh6aO8F6Hsn9ySzTGPXr1L/pBs3gJfueKLLEla\nUtOuBkaVJkZ/bghpyR/lA7MXlIVl6t/Fu6ePE5ufGakvcsIphxIOG81U40vycl2a\nLevsb1RFRl0YJw27/FUEpyQ8cpLZGP4Z/QvPR54IMPzKvKxToWRRJTexhuhyrJ0T\nNf8k/oQDIcC6gkt3TpBn4gR2tW0JHDCuRpyjIYHNZO/cfrMmC81ThxD7Qin36DFn\nanXn9+OHAgMBAAECggEAUfu2OCDCJEpEKDXUs+y4olKwL/4VfcG1vmhWphwt761V\nWv78RbETnGrIbBPbh/0n0VtgTU52sa+QmntKeDwXrQhrKcPLV6a5EC+zaN6Qj/Fm\nboirqA/Y/Ul7leIcrzIQZ5IK9ooUH11nlJv7X2diLuILSvsZb1FZVcs+L4FNRTBt\n9Hicc881g/NwfwGsrtWdcql/2HMNNnkk9gyQr/6egFtP2bQzxLOu7ilG4LAK51n9\n2Nwr0uTKFXF9GHArsqR2XYF+vvgHeEgfZ+xTbSkVvMLm/k4kxbyfe0KztApX1rZR\nERxPqnAkxI3yZzUJr2ZiF9ONgst8BeRUoqky24lSoQKBgQDyFTsWVjRQlJ66hTv3\noi0L2BqbXuNqiedwTJo0v8EJOxvHT17Hosag+x2gVsuNwyH2Ej/6E9C10SasRLVg\n5kzNQq+aP4dDoDSisXn+2/e7Nn4S5rPCkuOnt/96+sMK1IVNAgmJC/wk+U6I8/zl\nTEbfC6VVZBbZk0BKgUj570IKsQKBgQDLwk6r7wk8c5kazQsj8VapXYliV80PXIf+\nj4swb3nNpIL99L0F9sTzcuaM+huBsKGA4BZogaFndJmSgULnHN7ZafRG5VhjaGQY\nh8NCfbMrMrP3s5KTZVrgrsNg6I/Gu2nqcbMosuaJwstAErJl1w0alZIpZ7u3fyN3\nrS9vF/fvtwKBgAkYHxYhuulkC+p54tzUrNiLD8TSdbyk3ZrsZcahhYDxRYPhSXA6\nfzfA90X0vMTglcAGw3yDjg2mg8to8V9oh24WmT40MMKrnA6YmDqozM+tpmLTY+Fl\nX0QHt4NJNFaN0UwpTW5mktxYuUiP0epTST5L07Q3hFw8Gegynyk0gcihAoGBAInD\nSBmrNh1vMvcR5xRYGfXMzhR1tKlMMI6GUt9en4XQUtiNXjfoDmVjLEno2CwpViii\nWcQy0QP3q9WIG8nSlUF+B7DfY5FihTqon/YWssrkLxWsjc+mWXlL78FXu83r7MKc\nOTutKX2+/FjHy2JbsfplYjsobZy1Ey/ZIhcEp5elAoGAWikqr4BubAPRH7e/7+RR\nKTRlw/PK1PhLBuMe4szuZzd/J6Tu2/TzzWis5UIgUiH34p7G4b4mKHPpvb9aE6mR\nMShlNU/pEQVs/urcfHdzKQ6qdaQnpEH3uGOku1YpJ7asgewqpTXTqTtgbfWX+nCa\nJ7C/1GcDpk5AVgP4FQp6SWc=";
+
+
+
+        // Create a JWT payload containing the required claims
+        var currentTime = DateTime.UtcNow;
+        var payload = new
+        {
+            iss = clientEmail,
+            scope = scopes,
+            aud = "https://oauth2.googleapis.com/token",
+            exp = Math.Round((currentTime - new DateTime(1970, 1, 1)).TotalSeconds) + 3600, // Expiry time in seconds (1 hour from now)
+            iat = Math.Round((currentTime - new DateTime(1970, 1, 1)).TotalSeconds)
+        };
+
+        // Encode the JWT payload
+        var base64Header = Convert.ToBase64String(Encoding.UTF8.GetBytes("{\"alg\":\"RS256\",\"typ\":\"JWT\"}"));
+        var base64Payload = Convert.ToBase64String(Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(payload)));
+
+        // Combine the base64-encoded header and payload to create the signing input
+        var signingInput = $"{base64Header}.{base64Payload}";
+
+        // Convert the private key to bytes and create an RSA object
+        byte[] privateKeyBytes = Convert.FromBase64String(privateKey);
+        var rsa = RSA.Create();
+        rsa.ImportPkcs8PrivateKey(privateKeyBytes, out _);
+
+        // Sign the JWT with the private key
+        var signature = rsa.SignData(Encoding.UTF8.GetBytes(signingInput), HashAlgorithmName.SHA256, RSASignaturePadding.Pkcs1);
+        var signatureBase64 = Convert.ToBase64String(signature);
+
+        // Combine the base64-encoded header, payload, and signature to create the JWT token
+        var jwtToken = $"{base64Header}.{base64Payload}.{signatureBase64}";
+
+        // Send a POST request to the Google OAuth 2.0 token endpoint to exchange the JWT for a Bearer token
+        // Implement the HTTP request logic here (e.g., using HttpClient) to send the token and obtain the access token.
+
+        // Example: Display the JWT token
+        Console.WriteLine(jwtToken);
+
+        string apiUrl = "https://admin.googleapis.com/admin/directory/v1/groups";
+
+        // Call the Google API using the JWT token in the Authorization header
+        using (var httpClient = new HttpClient())
+        {
+            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", jwtToken);
+
+            // Set any other necessary headers or parameters for the API request
+            // For example, if you're making a POST request with a JSON payload:
+            // httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            // string requestBody = "{\"key\": \"value\"}";
+            // HttpContent content = new StringContent(requestBody, Encoding.UTF8, "application/json");
+
+            // Make the API call
+            var response = httpClient.GetAsync(apiUrl).GetAwaiter().GetResult();
+
+            // Process the response
+            if (response.IsSuccessStatusCode)
+            {
+                var responseContent = response.Content.ReadAsStringAsync().GetAwaiter().GetResult();
+                Console.WriteLine($"API response: {responseContent}");
+            }
+            else
+            {
+                Console.WriteLine($"Error: {response.StatusCode} - {response.ReasonPhrase}");
+            }
+        }
+
+
+
+
+
+    }
+}
